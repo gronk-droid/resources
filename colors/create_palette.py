@@ -1,5 +1,6 @@
 import struct
 import argparse
+import os
 
 def hex_to_rgb(hex_color):
     """Convert hex color to RGB (0-1 range for ASE, 0-255 for ACO)"""
@@ -88,7 +89,15 @@ parser.add_argument(
     default='all',
     help='Name for combined palette files (default: all)'
 )
+parser.add_argument(
+    '--dnsimple-name',
+    default='dnsimple',
+    help='Name for dnsimple palette files (default: dnsimple)'
+)
 args = parser.parse_args()
+
+# Create output directory
+os.makedirs('out', exist_ok=True)
 
 # Grayscale palette
 grayscale_colors = [
@@ -129,27 +138,45 @@ color_palettes = [
     ])
 ]
 
+# DNSimple palette
+dnsimple_colors = [
+    ("light_red", "#ff7d79"),
+    ("light_blue", "#72c3d2"),
+    ("light_yellow", "#ffdf83"),
+    ("light_pink", "#E5698F"),
+    ("light_green", "#72C8B1"),
+    ("blue", "#1a5ec6"),
+    ("red", "#f05751"),
+    ("orange", "#ff9138")
+]
+
 # Combine all color palettes
 all_colors = []
 for palette_name, colors in color_palettes:
     all_colors.extend(colors)
 
 # Generate grayscale files
-create_ase(grayscale_colors, f"{args.grayscale_name}.ase")
-create_aco(grayscale_colors, f"{args.grayscale_name}.aco")
-print(f"Created {args.grayscale_name}.ase with {len(grayscale_colors)} colors")
-print(f"Created {args.grayscale_name}.aco with {len(grayscale_colors)} colors")
+create_ase(grayscale_colors, f"out/{args.grayscale_name}.ase")
+create_aco(grayscale_colors, f"out/{args.grayscale_name}.aco")
+print(f"Created out/{args.grayscale_name}.ase with {len(grayscale_colors)} colors")
+print(f"Created out/{args.grayscale_name}.aco with {len(grayscale_colors)} colors")
 
 # Generate color files
-create_ase(all_colors, f"{args.colors_name}.ase")
-create_aco(all_colors, f"{args.colors_name}.aco")
-print(f"Created {args.colors_name}.ase with {len(all_colors)} colors")
-print(f"Created {args.colors_name}.aco with {len(all_colors)} colors")
+create_ase(all_colors, f"out/{args.colors_name}.ase")
+create_aco(all_colors, f"out/{args.colors_name}.aco")
+print(f"Created out/{args.colors_name}.ase with {len(all_colors)} colors")
+print(f"Created out/{args.colors_name}.aco with {len(all_colors)} colors")
+
+# Generate dnsimple files
+create_ase(dnsimple_colors, f"out/{args.dnsimple_name}.ase")
+create_aco(dnsimple_colors, f"out/{args.dnsimple_name}.aco")
+print(f"Created out/{args.dnsimple_name}.ase with {len(dnsimple_colors)} colors")
+print(f"Created out/{args.dnsimple_name}.aco with {len(dnsimple_colors)} colors")
 
 # Generate combined file if -a flag is set
 if args.all:
     combined_colors = grayscale_colors + all_colors
-    create_ase(combined_colors, f"{args.all_name}.ase")
-    create_aco(combined_colors, f"{args.all_name}.aco")
-    print(f"Created {args.all_name}.ase with {len(combined_colors)} colors")
-    print(f"Created {args.all_name}.aco with {len(combined_colors)} colors")
+    create_ase(combined_colors, f"out/{args.all_name}.ase")
+    create_aco(combined_colors, f"out/{args.all_name}.aco")
+    print(f"Created out/{args.all_name}.ase with {len(combined_colors)} colors")
+    print(f"Created out/{args.all_name}.aco with {len(combined_colors)} colors")
